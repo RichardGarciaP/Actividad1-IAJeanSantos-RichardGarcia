@@ -52,10 +52,12 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Error interno del servidor' });
 });
 
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`📊 API disponible en http://localhost:${PORT}/api`);
-});
+// Iniciar servidor solo si no estamos en entorno de testing
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`📊 API disponible en http://localhost:${PORT}/api`);
+  });
+}
 
 module.exports = app;

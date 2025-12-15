@@ -2,21 +2,28 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 
-const dbDir = path.join(__dirname, '..', 'database');
-const dbPath = path.join(dbDir, 'financialsec.db');
+let db;
 
-// Crear directorio de base de datos si no existe
-if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir, { recursive: true });
-}
+if (process.env.NODE_ENV === 'test') {
+  // Usar base de datos en memoria para tests
+  db = new sqlite3.Database(':memory:');
+} else {
+  const dbDir = path.join(__dirname, '..', 'database');
+  const dbPath = path.join(dbDir, 'financialsec.db');
 
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('Error al conectar con la base de datos:', err.message);
-  } else {
-    console.log('Conectado a la base de datos SQLite');
+  // Crear directorio de base de datos si no existe
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
   }
-});
+
+  db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+      console.error('Error al conectar con la base de datos:', err.message);
+    } else {
+      console.log('Conectado a la base de datos SQLite');
+    }
+  });
+}
 
 // Crear tablas
 const createTables = () => {
